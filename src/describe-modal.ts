@@ -44,11 +44,13 @@ export class DescribeModal extends Modal {
         new Setting(contentEl)
             .setName('Description')
             .setDesc('What is this file about?')
-            .addTextArea(text => text
-                .setPlaceholder('Quarterly financial report for Q2 2026...')
-                .setValue(this.description)
-                .onChange(value => { this.description = value; })
-                .inputEl.style.width = '100%');
+            .addTextArea(text => {
+                text.setPlaceholder('Quarterly financial report for Q2 2026...')
+                    .setValue(this.description)
+                    .onChange(value => { this.description = value; });
+                text.inputEl.addClass('fd-full-width');
+                return text;
+            });
 
         new Setting(contentEl)
             .setName('Tags')
@@ -160,8 +162,7 @@ export class UndescribedFilesModal extends Modal {
         this.timeFormat = timeFormat;
         this.onCloseCallback = onCloseCallback || (() => {});
         this.titleEl.setText('File Describer');
-        this.modalEl.style.width = '90%';
-        this.modalEl.style.maxWidth = '900px';
+        this.modalEl.addClass('fd-modal-size');
     }
 
     onOpen(): void {
@@ -223,7 +224,7 @@ export class UndescribedFilesModal extends Modal {
         const footerEl = contentEl.createEl('div', { cls: 'fd-footer' });
 
         const saveBtn = footerEl.createEl('button', { text: 'Save', cls: 'mod-cta' });
-        saveBtn.style.marginRight = '8px';
+        saveBtn.addClass('fd-save-btn-mr');
         saveBtn.onclick = async () => {
             saveBtn.disabled = true;
             saveBtn.textContent = 'Saving...';
@@ -255,10 +256,7 @@ export class UndescribedFilesModal extends Modal {
             if (type === 'orphaned') {
                 nameEl.createEl('span', { text: item.missingFileName || '' });
                 nameEl.createEl('br');
-                const warn = nameEl.createEl('span', { text: '? File deleted!' });
-                warn.style.color = 'var(--text-error)';
-                warn.style.fontSize = '0.85em';
-                warn.style.fontWeight = '600';
+                const warn = nameEl.createEl('span', { text: '? File deleted!', cls: 'fd-warning' });
             } else {
                 nameEl.createEl('span', { text: item.file.name });
                 nameEl.createEl('br');
@@ -273,9 +271,8 @@ export class UndescribedFilesModal extends Modal {
             const descEl = rowEl.createEl('div', { cls: 'fd-col-desc' });
             const textarea = descEl.createEl('textarea', {
                 attr: { placeholder: 'Enter description...' },
+                cls: 'fd-full-width fd-textarea-min',
             });
-            textarea.style.width = '100%';
-            textarea.style.minHeight = '60px';
             if (item.existingDescription) {
                 textarea.value = item.existingDescription;
             }
@@ -283,8 +280,8 @@ export class UndescribedFilesModal extends Modal {
             const tagsEl = rowEl.createEl('div', { cls: 'fd-col-tags' });
             const tagInput = tagsEl.createEl('input', {
                 attr: { type: 'text', placeholder: 'tag1, tag2, ...' },
+                cls: 'fd-full-width',
             });
-            tagInput.style.width = '100%';
             if (item.existingTags) {
                 tagInput.value = item.existingTags;
             }
@@ -320,21 +317,20 @@ export class UndescribedFilesModal extends Modal {
                 keepRadio.onchange = () => {
                     if (keepRadio.checked) {
                         rowState.markedForDelete = false;
-                        rowEl.style.opacity = '1';
+                        rowEl.removeClass('fd-row-dimmed');
                     }
                 };
 
                 delRadio.onchange = () => {
                     if (delRadio.checked) {
                         rowState.markedForDelete = true;
-                        rowEl.style.opacity = '0.4';
+                        rowEl.addClass('fd-row-dimmed');
                     }
                 };
 
                 this.rows.push(rowState);
             } else {
-                const skipBtn = actionEl.createEl('button', { text: 'Skip' });
-                skipBtn.style.width = '100%';
+                const skipBtn = actionEl.createEl('button', { text: 'Skip', cls: 'fd-btn-wide' });
 
                 const rowState: TableRow = {
                     file: item.file,
@@ -352,7 +348,11 @@ export class UndescribedFilesModal extends Modal {
                     rowState.skipped = !rowState.skipped;
                     skipBtn.textContent = rowState.skipped ? 'Skipped' : 'Skip';
                     skipBtn.className = rowState.skipped ? 'fd-skipped-btn' : '';
-                    rowEl.style.opacity = rowState.skipped ? '0.4' : '1';
+                    if (rowState.skipped) {
+                        rowEl.addClass('fd-row-dimmed');
+                    } else {
+                        rowEl.removeClass('fd-row-dimmed');
+                    }
                 };
 
                 this.rows.push(rowState);
@@ -366,10 +366,11 @@ export class UndescribedFilesModal extends Modal {
         for (const row of this.rows) {
             if (row.type === 'orphaned') {
                 if (row.markedForDelete) {
-                    await this.app.vault.delete(row.file);
+                    await this.app.fileManager.trashFile(row.file);
                 } else {
                     await this.app.fileManager.processFrontMatter(row.file, (fm) => {
-                        fm['Reviewed'] = true;
+                        const f = fm as Record<string, unknown>;
+                        f['Reviewed'] = true;
                     });
                 }
             } else {

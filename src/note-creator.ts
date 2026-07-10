@@ -1,4 +1,4 @@
-﻿import { App, TFolder, TFile, normalizePath } from 'obsidian';
+﻿import { App, TFile, normalizePath } from 'obsidian';
 
 export interface FileMetadata {
     filename: string;

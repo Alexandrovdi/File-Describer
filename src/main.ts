@@ -1,7 +1,11 @@
-﻿import { Plugin, TFile, TFolder, Notice, normalizePath, moment } from 'obsidian';
+﻿import { Plugin, TFile, TFolder, Notice, normalizePath, moment, type App } from 'obsidian';
 import { FileDescriberSettings, FileDescriberSettingTab, DEFAULT_SETTINGS } from './settings';
 import { NoteCreator } from './note-creator';
 import { UndescribedFilesModal, UndescribedFile } from './describe-modal';
+
+function processFrontMatterSafe(noteFile: TFile, app: App, callback: (fm: Record<string, unknown>) => void): Promise<void> {
+    return app.fileManager.processFrontMatter(noteFile, callback as (fm: unknown) => void);
+}
 
 export default class FileDescriberPlugin extends Plugin {
     settings: FileDescriberSettings;
@@ -20,17 +24,17 @@ export default class FileDescriberPlugin extends Plugin {
             id: 'show-undescribed-files',
             name: 'Show undescribed files',
             callback: () => {
-                this.showUndescribedFiles();
+                void this.showUndescribedFiles();
             },
         });
 
         const ribbonIcon = this.addRibbonIcon('file-text', 'File Describer', () => {
-            this.showUndescribedFiles();
+            void this.showUndescribedFiles();
         });
-        ribbonIcon.style.position = 'relative';
+        ribbonIcon.addClass('fd-ribbon-relative');
         this.badgeEl = ribbonIcon.createEl('div', { cls: 'ribbon-badge' });
         this.badgeEl.setText('!');
-        this.badgeEl.style.display = 'none';
+        this.badgeEl.addClass('fd-badge-hidden');
 
         this.app.workspace.onLayoutReady(async () => {
             const inTarget = (path: string) => path.startsWith(this.settings.targetFolder + '/');
@@ -60,7 +64,7 @@ export default class FileDescriberPlugin extends Plugin {
                     if (abstractFile.extension === 'md') return;
                     if (!inTarget(abstractFile.path) && !inTarget(oldPath)) return;
                     if (inTarget(abstractFile.path) && inTarget(oldPath)) {
-                        this.updateFileLink(abstractFile, oldPath);
+                        void this.updateFileLink(abstractFile, oldPath);
                     }
                     this.triggerScan();
                 }),
@@ -98,7 +102,7 @@ export default class FileDescriberPlugin extends Plugin {
         const datePart = moment().format(this.settings.dateFormat);
         const timePart = this.settings.timeFormat ? ' ' + moment().format(this.settings.timeFormat) : '';
 
-        await this.app.fileManager.processFrontMatter(noteFile, (fm) => {
+        await processFrontMatterSafe(noteFile, this.app, (fm) => {
             fm['Status'] = `файл ${file.name} - удален ${datePart}${timePart}`;
             fm['File'] = '';
         });
@@ -183,7 +187,7 @@ export default class FileDescriberPlugin extends Plugin {
                         const relPath = linkedFile.path.startsWith(targetFolder + '/')
                             ? linkedFile.path.slice(targetFolder.length + 1)
                             : linkedFile.name;
-                        await this.app.fileManager.processFrontMatter(noteFile, (fm2) => {
+                        await processFrontMatterSafe(noteFile, this.app, (fm2) => {
                             delete fm2['Status'];
                             delete fm2['Reviewed'];
                             fm2['File'] = `[[${relPath}]]`;
@@ -204,9 +208,11 @@ export default class FileDescriberPlugin extends Plugin {
     updateBadge(count: number): void {
         if (count > 0) {
             this.badgeEl.setText('!');
-            this.badgeEl.style.display = 'flex';
+            this.badgeEl.removeClass('fd-badge-hidden');
+            this.badgeEl.addClass('fd-badge-visible');
         } else {
-            this.badgeEl.style.display = 'none';
+            this.badgeEl.removeClass('fd-badge-visible');
+            this.badgeEl.addClass('fd-badge-hidden');
         }
     }
 
@@ -228,7 +234,7 @@ export default class FileDescriberPlugin extends Plugin {
             ? file.path.slice(this.settings.targetFolder.length + 1)
             : file.name;
 
-        await this.app.fileManager.processFrontMatter(noteFile, (fm) => {
+        await processFrontMatterSafe(noteFile, this.app, (fm) => {
             if (oldFileName !== file.name) {
                 fm['filename'] = file.name;
             }
@@ -252,7 +258,7 @@ export default class FileDescriberPlugin extends Plugin {
             this.settings.timeFormat,
             () => {
                 this.isModalOpen = false;
-                setTimeout(() => this.scanAndUpdateBadge(), 100);
+                window.setTimeout(() => void this.scanAndUpdateBadge(), 100);
             },
         );
         modal.open();
@@ -270,7 +276,8 @@ export default class FileDescriberPlugin extends Plugin {
     }
 
     async loadSettings(): Promise<void> {
-        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        const data = await this.loadData();
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, data) as FileDescriberSettings;
     }
 
     async saveSettings(): Promise<void> {

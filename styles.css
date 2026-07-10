@@ -83,6 +83,18 @@
     padding-top: 8px;
 }
 
+.fd-ribbon-relative {
+    position: relative;
+}
+
+.fd-badge-visible {
+    display: flex;
+}
+
+.fd-badge-hidden {
+    display: none;
+}
+
 .ribbon-badge {
     position: absolute;
     top: 1px;
@@ -146,4 +158,35 @@
     font-size: 0.9em;
     padding: 20px 0;
     text-align: center;
+}
+
+.fd-modal-size {
+    width: 90%;
+    max-width: 900px;
+}
+
+.fd-full-width {
+    width: 100%;
+}
+
+.fd-textarea-min {
+    min-height: 60px;
+}
+
+.fd-warning {
+    color: var(--text-error);
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.fd-row-dimmed {
+    opacity: 0.4;
+}
+
+.fd-btn-wide {
+    width: 100%;
+}
+
+.fd-save-btn-mr {
+    margin-right: 8px;
 }

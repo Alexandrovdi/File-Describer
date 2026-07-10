@@ -28,7 +28,7 @@ export class FileDescriberSettingTab extends PluginSettingTab {
     display(): void {
         const { containerEl } = this;
         containerEl.empty();
-        containerEl.createEl('h2', { text: 'File Describer Settings' });
+        new Setting(containerEl).setName('File Describer Settings').setHeading();
 
         new Setting(containerEl)
             .setName('Target folder')
