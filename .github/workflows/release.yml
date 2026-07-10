@@ -16,14 +16,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - uses: softprops/action-gh-release@v2
+      - uses: ncipollo/release-action@v1
         with:
-          files: |
-            main.js
-            manifest.json
-            styles.css
+          artifacts: "main.js,manifest.json,styles.css"
           body: "Release ${{ github.ref_name }}"
           name: ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+          token: ${{ github.token }}
