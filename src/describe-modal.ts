@@ -256,7 +256,7 @@ export class UndescribedFilesModal extends Modal {
             if (type === 'orphaned') {
                 nameEl.createEl('span', { text: item.missingFileName || '' });
                 nameEl.createEl('br');
-                const warn = nameEl.createEl('span', { text: '? File deleted!', cls: 'fd-warning' });
+                nameEl.createEl('span', { text: '? File deleted!', cls: 'fd-warning' });
             } else {
                 nameEl.createEl('span', { text: item.file.name });
                 nameEl.createEl('br');

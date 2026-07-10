@@ -28,7 +28,7 @@ export class FileDescriberSettingTab extends PluginSettingTab {
     display(): void {
         const { containerEl } = this;
         containerEl.empty();
-        new Setting(containerEl).setName('File Describer Settings').setHeading();
+        new Setting(containerEl).setName('General').setHeading();
 
         new Setting(containerEl)
             .setName('Target folder')
@@ -39,7 +39,7 @@ export class FileDescriberSettingTab extends PluginSettingTab {
                 .onChange(async (value) => {
                     this.plugin.settings.targetFolder = value;
                     await this.plugin.saveSettings();
-                    this.plugin.scanAndUpdateBadge();
+                    void this.plugin.scanAndUpdateBadge();
                 }));
 
         new Setting(containerEl)

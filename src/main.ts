@@ -99,8 +99,9 @@ export default class FileDescriberPlugin extends Plugin {
         if (!cache?.frontmatter) return;
         if (cache.frontmatter['Status']) return;
 
-        const datePart = moment().format(this.settings.dateFormat);
-        const timePart = this.settings.timeFormat ? ' ' + moment().format(this.settings.timeFormat) : '';
+        const now = moment();
+        const datePart = now.format(this.settings.dateFormat);
+        const timePart = this.settings.timeFormat ? ' ' + now.format(this.settings.timeFormat) : '';
 
         await processFrontMatterSafe(noteFile, this.app, (fm) => {
             fm['Status'] = `файл ${file.name} - удален ${datePart}${timePart}`;
@@ -153,10 +154,10 @@ export default class FileDescriberPlugin extends Plugin {
             const noteFiles = this.collectAllMdFiles(notesFolder);
             for (const noteFile of noteFiles) {
                 const cache = this.app.metadataCache.getFileCache(noteFile);
-                const fm = cache?.frontmatter;
+                const fm = cache?.frontmatter as Record<string, unknown> | undefined;
                 if (!fm) continue;
 
-                const linkedFilename = fm['filename'];
+                const linkedFilename = fm['filename'] as string | undefined;
                 if (!linkedFilename) continue;
 
                 const linkedPath = normalizePath(`${targetFolder}/${linkedFilename}`);
@@ -178,7 +179,7 @@ export default class FileDescriberPlugin extends Plugin {
                         file: noteFile,
                         type: 'orphaned',
                         missingFileName: linkedFilename,
-                        existingDescription: fm['File Description'] || '',
+                        existingDescription: (fm['File Description'] as string) || '',
                         existingTags: tags,
                         reason: 'Original file deleted',
                     });
@@ -276,7 +277,7 @@ export default class FileDescriberPlugin extends Plugin {
     }
 
     async loadSettings(): Promise<void> {
-        const data = await this.loadData();
+        const data = await this.loadData() as Partial<FileDescriberSettings> | undefined;
         this.settings = Object.assign({}, DEFAULT_SETTINGS, data) as FileDescriberSettings;
     }
 
