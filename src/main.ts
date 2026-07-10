@@ -277,7 +277,7 @@ export default class FileDescriberPlugin extends Plugin {
     }
 
     async loadSettings(): Promise<void> {
-        const data = await this.loadData();
+        const data: Record<string, unknown> | undefined = await this.loadData();
         this.settings = Object.assign({}, DEFAULT_SETTINGS, data) as FileDescriberSettings;
     }
 
