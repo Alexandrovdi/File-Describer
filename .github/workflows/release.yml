@@ -19,16 +19,18 @@ jobs:
       - name: Create Release
         id: create_release
         run: |
-          curl -s -X POST "https://api.github.com/repos/${{ github.repository }}/releases" \
+          response=$(curl -s -X POST "https://api.github.com/repos/${{ github.repository }}/releases" \
             -H "Authorization: token ${{ github.token }}" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n --arg tag "${{ github.ref_name }}" '{
-              tag_name: $tag,
-              name: $tag,
-              body: ("Release " + $tag)
-            }')" > release_response.json
-          cat release_response.json
-          echo "release_id=$(jq -r '.id' release_response.json)" >> $GITHUB_OUTPUT
+            -d "{\"tag_name\":\"${{ github.ref_name }}\",\"name\":\"${{ github.ref_name }}\",\"body\":\"Release ${{ github.ref_name }}\"}")
+          echo "$response"
+          if echo "$response" | grep -q '"id"'; then
+            release_id=$(echo "$response" | grep -o '"id":[0-9]*' | head -1 | grep -o '[0-9]*')
+            echo "release_id=$release_id" >> $GITHUB_OUTPUT
+          else
+            echo "Failed to create release"
+            exit 1
+          fi
       - name: Upload Release Assets
         run: |
           for file in main.js manifest.json styles.css; do
