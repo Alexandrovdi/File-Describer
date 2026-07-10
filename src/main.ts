@@ -99,7 +99,7 @@ export default class FileDescriberPlugin extends Plugin {
         if (!cache?.frontmatter) return;
         if (cache.frontmatter['Status']) return;
 
-        const now = moment();
+        const now = moment() as { format: (f: string) => string };
         const datePart = now.format(this.settings.dateFormat);
         const timePart = this.settings.timeFormat ? ' ' + now.format(this.settings.timeFormat) : '';
 
@@ -154,7 +154,7 @@ export default class FileDescriberPlugin extends Plugin {
             const noteFiles = this.collectAllMdFiles(notesFolder);
             for (const noteFile of noteFiles) {
                 const cache = this.app.metadataCache.getFileCache(noteFile);
-                const fm = cache?.frontmatter as Record<string, unknown> | undefined;
+                const fm = cache?.frontmatter;
                 if (!fm) continue;
 
                 const linkedFilename = fm['filename'] as string | undefined;
@@ -277,7 +277,7 @@ export default class FileDescriberPlugin extends Plugin {
     }
 
     async loadSettings(): Promise<void> {
-        const data = await this.loadData() as Partial<FileDescriberSettings> | undefined;
+        const data = await this.loadData();
         this.settings = Object.assign({}, DEFAULT_SETTINGS, data) as FileDescriberSettings;
     }
 

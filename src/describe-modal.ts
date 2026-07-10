@@ -38,7 +38,7 @@ export class DescribeModal extends Modal {
             .addButton(btn => btn
                 .setButtonText('Open in system explorer')
                 .onClick(() => {
-                    this.app.showInFolder(this.file.path);
+                    (this.app as { showInFolder: (path: string) => void }).showInFolder(this.file.path);
                 }));
 
         new Setting(contentEl)
