@@ -38,7 +38,7 @@ export class DescribeModal extends Modal {
             .addButton(btn => btn
                 .setButtonText('Open in system explorer')
                 .onClick(() => {
-                    (this.app as { showInFolder: (path: string) => void }).showInFolder(this.file.path);
+                    (this.app as unknown as { showInFolder: (path: string) => void }).showInFolder(this.file.path);
                 }));
 
         new Setting(contentEl)
@@ -73,7 +73,7 @@ export class DescribeModal extends Modal {
                         .map(t => t.trim())
                         .filter(t => t.length > 0);
 
-                    const dateStr = new Date().toISOString().split('T')[0];
+                    const dateStr = new Date().toISOString().split('T')[0] ?? '';
 
                     const metadata: FileMetadata = {
                         filename: this.file.name,
@@ -248,7 +248,7 @@ export class UndescribedFilesModal extends Modal {
         header.createEl('div', { cls: 'fd-col-action', text: '' });
 
         for (let i = 0; i < items.length; i++) {
-            const item = items[i];
+            const item = items[i]!;
             const rowEl = tableEl.createEl('div', { cls: 'fd-row' });
 
             const nameEl = rowEl.createEl('div', { cls: 'fd-col-name' });
@@ -361,7 +361,7 @@ export class UndescribedFilesModal extends Modal {
     }
 
     async saveAll(): Promise<void> {
-        const dateStr = new Date().toISOString().split('T')[0];
+        const dateStr = new Date().toISOString().split('T')[0] ?? '';
 
         for (const row of this.rows) {
             if (row.type === 'orphaned') {

@@ -8,9 +8,9 @@ function processFrontMatterSafe(noteFile: TFile, app: App, callback: (fm: Record
 }
 
 export default class FileDescriberPlugin extends Plugin {
-    settings: FileDescriberSettings;
-    noteCreator: NoteCreator;
-    private badgeEl: HTMLElement;
+    settings!: FileDescriberSettings;
+    noteCreator!: NoteCreator;
+    private badgeEl!: HTMLElement;
     private scanDebounceTimer: number | null = null;
     private isModalOpen = false;
 
@@ -99,7 +99,7 @@ export default class FileDescriberPlugin extends Plugin {
         if (!cache?.frontmatter) return;
         if (cache.frontmatter['Status']) return;
 
-        const now = moment() as { format: (f: string) => string };
+        const now = (moment as unknown as () => { format: (f: string) => string })();
         const datePart = now.format(this.settings.dateFormat);
         const timePart = this.settings.timeFormat ? ' ' + now.format(this.settings.timeFormat) : '';
 
@@ -164,7 +164,8 @@ export default class FileDescriberPlugin extends Plugin {
                 let linkedFile = this.app.vault.getAbstractFileByPath(linkedPath);
 
                 if (!linkedFile) {
-                    linkedFile = files.find(f => f.name === linkedFilename);
+                    const found = files.find(f => f.name === linkedFilename);
+                    linkedFile = found ?? null;
                 }
 
                 if (!linkedFile) {
