@@ -1,0 +1,149 @@
+﻿.file-describer-modal textarea {
+    width: 100%;
+    min-height: 100px;
+    font-family: var(--font-text);
+}
+
+.file-describer-modal h2 {
+    margin-top: 0;
+}
+
+.fd-table {
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.fd-header {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 130px;
+    background: var(--background-secondary);
+    font-weight: 600;
+    font-size: 0.85em;
+    color: var(--text-muted);
+}
+
+.fd-header > div {
+    padding: 8px 12px;
+}
+
+.fd-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 130px;
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+.fd-row > div {
+    padding: 8px 12px;
+    min-height: 40px;
+}
+
+.fd-col-name small {
+    color: var(--text-muted);
+    font-size: 0.8em;
+}
+
+.fd-col-desc textarea {
+    width: 100%;
+    min-height: 60px;
+    resize: vertical;
+    font-family: var(--font-text);
+    font-size: 0.9em;
+    box-sizing: border-box;
+}
+
+.fd-col-tags input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.fd-col-action button {
+    width: 100%;
+    padding: 4px 8px;
+    font-size: 0.85em;
+    cursor: pointer;
+    margin-bottom: 4px;
+}
+
+.fd-col-action button.fd-skipped-btn {
+    opacity: 0.6;
+}
+
+.fd-action-label {
+    font-size: 0.75em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.fd-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 8px;
+}
+
+.ribbon-badge {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    background: var(--color-red);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    min-width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    pointer-events: none;
+    box-sizing: border-box;
+    line-height: 1;
+    z-index: 10;
+}
+
+.fd-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--background-modifier-border);
+    margin-bottom: 12px;
+}
+
+.fd-tab {
+    padding: 8px 16px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: var(--font-ui-small);
+    font-weight: 500;
+    font-family: inherit;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.fd-tab:hover {
+    color: var(--text-normal);
+}
+
+.fd-tab-active {
+    color: var(--text-accent);
+    border-bottom-color: var(--text-accent);
+}
+
+.fd-tab-content {
+    display: none;
+}
+
+.fd-tab-content-active {
+    display: block;
+}
+
+.fd-empty {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    padding: 20px 0;
+    text-align: center;
+}
