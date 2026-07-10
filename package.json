@@ -17,5 +17,5 @@
     "deploy:test": "node esbuild.config.mjs production && node scripts/deploy.mjs test",
     "dev": "node esbuild.config.mjs"
   },
-  "version": "1.0.7"
+  "version": "1.0.8"
 }
