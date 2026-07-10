@@ -1,9 +1,8 @@
 ﻿{
   "name": "file-describer",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Obsidian plugin to create description notes for files",
   "main": "main.js",
-  "type": "module",
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
