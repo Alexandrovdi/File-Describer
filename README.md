@@ -1,3 +1,8 @@
+<p align="center">
+  <a href="README.md">English</a> |
+  <a href="README.ru.md">Русский</a>
+</p>
+
 # File Describer
 
 An Obsidian plugin that automatically creates and manages description notes for files in a watched folder. Perfect for organizing file archives with searchable descriptions, tracking file changes, and managing file metadata.
@@ -5,7 +10,7 @@ An Obsidian plugin that automatically creates and manages description notes for 
 ## Features
 
 - **Auto-creation** — when you drop a file into the target folder, a companion `.md` note is automatically created
-- **Tabbed review modal** — two tabs: «Новые файлы» (files without descriptions) and «Удалённые файлы» (deleted files)
+- **Tabbed review modal** — two tabs: «Новые файлы» (new files) and «Удалённые файлы» (deleted files)
 - **Delete tracking** — when a file is deleted, its companion note gets an automatic status update
 - **Rename detection** — companion note's `File` field follows the renamed file
 - **Orphaned note handling** — for deleted files, you can keep the note (mark as reviewed) or delete it
@@ -26,7 +31,7 @@ An Obsidian plugin that automatically creates and manages description notes for 
 
 Search for "File Describer" in Settings → Community plugins → Browse.
 
-### Manual (BRAT)
+### Via BRAT
 
 1. Install the [BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin
 2. Add `https://github.com/Alexandrovdi/File-Describer` to the list of beta plugins
