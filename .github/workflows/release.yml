@@ -22,10 +22,10 @@ jobs:
       - run: npm run build
       - uses: actions/attest-build-provenance@v1
         with:
-          subject-path: 'main.js,manifest.json,styles.css'
+          subject-path: 'main.js,manifest.json,styles.css,package.json'
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "main.js,manifest.json,styles.css"
+          artifacts: "main.js,manifest.json,styles.css,package.json"
           body: "Release ${{ github.ref_name }}"
           name: ${{ github.ref_name }}
           tag: ${{ github.ref_name }}
