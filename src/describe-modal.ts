@@ -203,12 +203,12 @@ export class UndescribedFilesModal extends Modal {
         }
 
         const switchTab = (tabId: string) => {
-            tabBar.querySelectorAll('.fd-tab').forEach(t => t.removeClass('fd-tab-active'));
+            tabBar.querySelectorAll('.fd-tab').forEach(t => t.classList.remove('fd-tab-active'));
             const activeTab = tabBar.querySelector(`.fd-tab[data-tab="${tabId}"]`);
-            if (activeTab) activeTab.addClass('fd-tab-active');
-            contentEl.querySelectorAll('.fd-tab-content').forEach(p => p.removeClass('fd-tab-content-active'));
+            if (activeTab) activeTab.classList.add('fd-tab-active');
+            contentEl.querySelectorAll('.fd-tab-content').forEach(p => p.classList.remove('fd-tab-content-active'));
             const panel = contentEl.querySelector(`.fd-tab-content[data-tab="${tabId}"]`);
-            if (panel) panel.addClass('fd-tab-content-active');
+            if (panel) panel.classList.add('fd-tab-content-active');
         };
 
         newTab.onclick = () => switchTab('new');

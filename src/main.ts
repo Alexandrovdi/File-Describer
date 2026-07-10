@@ -1,4 +1,4 @@
-﻿import { Plugin, TFile, TFolder, Notice, normalizePath } from 'obsidian';
+﻿import { Plugin, TFile, TFolder, Notice, normalizePath, moment } from 'obsidian';
 import { FileDescriberSettings, FileDescriberSettingTab, DEFAULT_SETTINGS } from './settings';
 import { NoteCreator } from './note-creator';
 import { UndescribedFilesModal, UndescribedFile } from './describe-modal';
@@ -95,8 +95,8 @@ export default class FileDescriberPlugin extends Plugin {
         if (!cache?.frontmatter) return;
         if (cache.frontmatter['Status']) return;
 
-        const datePart = window.moment().format(this.settings.dateFormat);
-        const timePart = this.settings.timeFormat ? ' ' + window.moment().format(this.settings.timeFormat) : '';
+        const datePart = moment().format(this.settings.dateFormat);
+        const timePart = this.settings.timeFormat ? ' ' + moment().format(this.settings.timeFormat) : '';
 
         await this.app.fileManager.processFrontMatter(noteFile, (fm) => {
             fm['Status'] = `файл ${file.name} - удален ${datePart}${timePart}`;
