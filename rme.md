@@ -17,7 +17,7 @@ An Obsidian plugin that automatically creates and manages description notes for 
 - **Recursive scanning** — files in the configured folder are scanned recursively regardless of nesting
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Graphify-Labs/graphify/v8/docs/graph-hero.png" alt="File Describer settings" width="900">
+  <img src="https://github.com/Alexandrovdi/File-Describer/blob/main/2026-07-11_21-44-26.jpg" alt="File Describer settings" width="900">
 </p>
 ![Settings window](2026-07-11_21-44-26.jpg)
 
