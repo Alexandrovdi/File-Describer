@@ -1,5 +1,6 @@
-﻿import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting } from 'obsidian';
 import type FileDescriberPlugin from './main';
+import { t } from './i18n';
 
 export interface FileDescriberSettings {
     targetFolder: string;
@@ -29,23 +30,25 @@ export class FileDescriberSettingTab extends PluginSettingTab {
         const { containerEl } = this;
         containerEl.empty();
 
-        new Setting(containerEl)
-            .setName('Target folder')
-            .setDesc('Folder to watch for new files')
+        const targetSetting = new Setting(containerEl)
+            .setName(t('settings.target-folder'))
+            .setDesc(t('settings.target-folder-desc'))
             .addText(text => text
-                .setPlaceholder('Файлы хранения')
+                .setPlaceholder(t('settings.placeholder.target-folder'))
                 .setValue(this.plugin.settings.targetFolder)
                 .onChange(async (value) => {
                     this.plugin.settings.targetFolder = value;
                     await this.plugin.saveSettings();
                     void this.plugin.scanAndUpdateBadge();
                 }));
-
+        targetSetting.descEl.createEl('div', {
+            text: t('settings.target-folder-extra'),
+        });
         new Setting(containerEl)
-            .setName('Notes subfolder')
-            .setDesc('Subfolder inside target folder for description notes (empty = same folder)')
+            .setName(t('settings.notes-subfolder'))
+            .setDesc(t('settings.notes-subfolder-desc'))
             .addText(text => text
-                .setPlaceholder('_заметки')
+                .setPlaceholder(t('settings.placeholder.notes-subfolder'))
                 .setValue(this.plugin.settings.notesSubfolder)
                 .onChange(async (value) => {
                     this.plugin.settings.notesSubfolder = value;
@@ -53,10 +56,10 @@ export class FileDescriberSettingTab extends PluginSettingTab {
                 }));
 
         new Setting(containerEl)
-            .setName('File types to track')
-            .setDesc('Comma-separated list of file extensions (without dots)')
+            .setName(t('settings.file-types'))
+            .setDesc(t('settings.file-types-desc'))
             .addText(text => text
-                .setPlaceholder('pdf,docx,txt')
+                .setPlaceholder(t('settings.placeholder.file-types'))
                 .setValue(this.plugin.settings.fileTypes)
                 .onChange(async (value) => {
                     this.plugin.settings.fileTypes = value;
@@ -64,10 +67,10 @@ export class FileDescriberSettingTab extends PluginSettingTab {
                 }));
 
         new Setting(containerEl)
-            .setName('Date format')
-            .setDesc('Moment.js pattern for Status date (e.g. YYYY-MM-DD, DD.MM.YYYY)')
+            .setName(t('settings.date-format'))
+            .setDesc(t('settings.date-format-desc'))
             .addText(text => text
-                .setPlaceholder('YYYY-MM-DD')
+                .setPlaceholder(t('settings.placeholder.date-format'))
                 .setValue(this.plugin.settings.dateFormat)
                 .onChange(async (value) => {
                     this.plugin.settings.dateFormat = value || 'YYYY-MM-DD';
@@ -75,10 +78,10 @@ export class FileDescriberSettingTab extends PluginSettingTab {
                 }));
 
         new Setting(containerEl)
-            .setName('Time format')
-            .setDesc('Moment.js pattern for Status time (e.g. HH:mm). Leave empty to omit time.')
+            .setName(t('settings.time-format'))
+            .setDesc(t('settings.time-format-desc'))
             .addText(text => text
-                .setPlaceholder('(empty)')
+                .setPlaceholder(t('settings.placeholder.time-format'))
                 .setValue(this.plugin.settings.timeFormat)
                 .onChange(async (value) => {
                     this.plugin.settings.timeFormat = value;

@@ -1,5 +1,6 @@
 ﻿import { App, Modal, Setting, TFile } from 'obsidian';
 import { NoteCreator, FileMetadata } from './note-creator';
+import { t, tpl } from './i18n';
 
 export class DescribeModal extends Modal {
     private file: TFile;
@@ -30,22 +31,22 @@ export class DescribeModal extends Modal {
         const { contentEl } = this;
         contentEl.empty();
 
-        contentEl.createEl('h2', { text: `Describe: ${this.file.name}` });
+        contentEl.createEl('h2', { text: tpl('describe.title', { fileName: this.file.name }) });
 
         new Setting(contentEl)
-            .setName('File')
+            .setName(t('describe.file'))
             .setDesc(this.file.path)
             .addButton(btn => btn
-                .setButtonText('Open in system explorer')
+                .setButtonText(t('describe.open-explorer'))
                 .onClick(() => {
                     (this.app as unknown as { showInFolder: (path: string) => void }).showInFolder(this.file.path);
                 }));
 
         new Setting(contentEl)
-            .setName('Description')
-            .setDesc('What is this file about?')
+            .setName(t('describe.description'))
+            .setDesc(t('describe.description-desc'))
             .addTextArea(text => {
-                text.setPlaceholder('Quarterly financial report for Q2 2026...')
+                text.setPlaceholder(t('describe.description-placeholder'))
                     .setValue(this.description)
                     .onChange(value => { this.description = value; });
                 text.inputEl.addClass('fd-full-width');
@@ -53,16 +54,16 @@ export class DescribeModal extends Modal {
             });
 
         new Setting(contentEl)
-            .setName('Tags')
-            .setDesc('Comma-separated tags (e.g. report, finance, contract)')
+            .setName(t('describe.tags'))
+            .setDesc(t('describe.tags-desc'))
             .addText(text => text
-                .setPlaceholder('report, finance, contract')
+                .setPlaceholder(t('describe.tags-placeholder'))
                 .setValue(this.tags)
                 .onChange(value => { this.tags = value; }));
 
         new Setting(contentEl)
             .addButton(btn => btn
-                .setButtonText('Create note')
+                .setButtonText(t('describe.create-note'))
                 .setCta()
                 .onClick(async () => {
                     if (!this.description.trim()) {
@@ -94,7 +95,7 @@ export class DescribeModal extends Modal {
                     this.onSubmit();
                 }))
             .addButton(btn => btn
-                .setButtonText('Skip')
+                .setButtonText(t('describe.skip'))
                 .onClick(() => {
                     this.close();
                 }));
@@ -161,7 +162,7 @@ export class UndescribedFilesModal extends Modal {
         this.dateFormat = dateFormat;
         this.timeFormat = timeFormat;
         this.onCloseCallback = onCloseCallback || (() => {});
-        this.titleEl.setText('File Describer');
+        this.titleEl.setText(t('undescribed.title'));
         this.modalEl.addClass('fd-modal-size');
     }
 
@@ -173,16 +174,16 @@ export class UndescribedFilesModal extends Modal {
         const orphanedFiles = this.files.filter(f => f.type === 'orphaned');
 
         if (this.files.length === 0) {
-            contentEl.createEl('p', { text: 'No pending files.' });
+            contentEl.createEl('p', { text: t('undescribed.empty') });
             return;
         }
 
         const tabBar = contentEl.createEl('div', { cls: 'fd-tabs' });
 
-        const newTab = tabBar.createEl('button', { cls: 'fd-tab', text: `Новые файлы (${newFiles.length})` });
+        const newTab = tabBar.createEl('button', { cls: 'fd-tab', text: tpl('undescribed.tab-new', { count: newFiles.length }) });
         newTab.dataset.tab = 'new';
 
-        const deletedTab = tabBar.createEl('button', { cls: 'fd-tab', text: `Удалённые файлы (${orphanedFiles.length})` });
+        const deletedTab = tabBar.createEl('button', { cls: 'fd-tab', text: tpl('undescribed.tab-deleted', { count: orphanedFiles.length }) });
         deletedTab.dataset.tab = 'deleted';
 
         const newPanel = contentEl.createEl('div', { cls: 'fd-tab-content' });
@@ -191,7 +192,7 @@ export class UndescribedFilesModal extends Modal {
         if (newFiles.length > 0) {
             this.buildTable(newPanel, newFiles, 'new');
         } else {
-            newPanel.createEl('p', { text: 'No new files. All files have descriptions.', cls: 'fd-empty' });
+            newPanel.createEl('p', { text: t('undescribed.empty-new'), cls: 'fd-empty' });
         }
 
         const deletedPanel = contentEl.createEl('div', { cls: 'fd-tab-content' });
@@ -200,7 +201,7 @@ export class UndescribedFilesModal extends Modal {
         if (orphanedFiles.length > 0) {
             this.buildTable(deletedPanel, orphanedFiles, 'orphaned');
         } else {
-            deletedPanel.createEl('p', { text: 'No deleted files awaiting review.', cls: 'fd-empty' });
+            deletedPanel.createEl('p', { text: t('undescribed.empty-deleted'), cls: 'fd-empty' });
         }
 
         const switchTab = (tabId: string) => {
@@ -223,16 +224,16 @@ export class UndescribedFilesModal extends Modal {
 
         const footerEl = contentEl.createEl('div', { cls: 'fd-footer' });
 
-        const saveBtn = footerEl.createEl('button', { text: 'Save', cls: 'mod-cta' });
+        const saveBtn = footerEl.createEl('button', { text: t('undescribed.save'), cls: 'mod-cta' });
         saveBtn.addClass('fd-save-btn-mr');
         saveBtn.onclick = async () => {
             saveBtn.disabled = true;
-            saveBtn.textContent = 'Saving...';
+            saveBtn.textContent = t('undescribed.saving');
             await this.saveAll();
             this.close();
         };
 
-        const laterBtn = footerEl.createEl('button', { text: 'Fill later' });
+        const laterBtn = footerEl.createEl('button', { text: t('undescribed.fill-later') });
         laterBtn.onclick = () => {
             this.close();
         };
@@ -242,9 +243,9 @@ export class UndescribedFilesModal extends Modal {
         const tableEl = container.createEl('div', { cls: 'fd-table' });
 
         const header = tableEl.createEl('div', { cls: 'fd-header' });
-        header.createEl('div', { cls: 'fd-col-name', text: 'File' });
-        header.createEl('div', { cls: 'fd-col-desc', text: 'Description' });
-        header.createEl('div', { cls: 'fd-col-tags', text: 'Tags' });
+        header.createEl('div', { cls: 'fd-col-name', text: t('undescribed.col-file') });
+        header.createEl('div', { cls: 'fd-col-desc', text: t('undescribed.col-description') });
+        header.createEl('div', { cls: 'fd-col-tags', text: t('undescribed.col-tags') });
         header.createEl('div', { cls: 'fd-col-action', text: '' });
 
         for (let i = 0; i < items.length; i++) {
@@ -256,7 +257,7 @@ export class UndescribedFilesModal extends Modal {
             if (type === 'orphaned') {
                 nameEl.createEl('span', { text: item.missingFileName || '' });
                 nameEl.createEl('br');
-                nameEl.createEl('span', { text: '? File deleted!', cls: 'fd-warning' });
+                nameEl.createEl('span', { text: t('undescribed.file-deleted'), cls: 'fd-warning' });
             } else {
                 nameEl.createEl('span', { text: item.file.name });
                 nameEl.createEl('br');
@@ -270,7 +271,7 @@ export class UndescribedFilesModal extends Modal {
 
             const descEl = rowEl.createEl('div', { cls: 'fd-col-desc' });
             const textarea = descEl.createEl('textarea', {
-                attr: { placeholder: 'Enter description...' },
+                attr: { placeholder: t('undescribed.placeholder-desc') },
                 cls: 'fd-full-width fd-textarea-min',
             });
             if (item.existingDescription) {
@@ -279,7 +280,7 @@ export class UndescribedFilesModal extends Modal {
 
             const tagsEl = rowEl.createEl('div', { cls: 'fd-col-tags' });
             const tagInput = tagsEl.createEl('input', {
-                attr: { type: 'text', placeholder: 'tag1, tag2, ...' },
+                attr: { type: 'text', placeholder: t('undescribed.placeholder-tags') },
                 cls: 'fd-full-width',
             });
             if (item.existingTags) {
@@ -291,15 +292,15 @@ export class UndescribedFilesModal extends Modal {
             if (type === 'orphaned') {
                 const radioName = `orphan-${i}`;
 
-                actionEl.createEl('div', { text: 'Оставить или удалить файл описания?', cls: 'fd-action-label' });
+                actionEl.createEl('div', { text: t('undescribed.orphan-label'), cls: 'fd-action-label' });
 
                 const keepRadio = actionEl.createEl('input', { attr: { type: 'radio', name: radioName } });
                 keepRadio.checked = true;
-                actionEl.createEl('label', { text: 'Оставить' });
+                actionEl.createEl('label', { text: t('undescribed.orphan-keep') });
                 actionEl.createEl('br');
 
                 const delRadio = actionEl.createEl('input', { attr: { type: 'radio', name: radioName } });
-                actionEl.createEl('label', { text: 'Удалить' });
+                actionEl.createEl('label', { text: t('undescribed.orphan-delete') });
 
                 const rowState: TableRow = {
                     file: item.file,
@@ -330,7 +331,7 @@ export class UndescribedFilesModal extends Modal {
 
                 this.rows.push(rowState);
             } else {
-                const skipBtn = actionEl.createEl('button', { text: 'Skip', cls: 'fd-btn-wide' });
+                const skipBtn = actionEl.createEl('button', { text: t('undescribed.skip-btn'), cls: 'fd-btn-wide' });
 
                 const rowState: TableRow = {
                     file: item.file,
@@ -346,7 +347,7 @@ export class UndescribedFilesModal extends Modal {
 
                 skipBtn.onclick = () => {
                     rowState.skipped = !rowState.skipped;
-                    skipBtn.textContent = rowState.skipped ? 'Skipped' : 'Skip';
+                    skipBtn.textContent = rowState.skipped ? t('undescribed.skipped-btn') : t('undescribed.skip-btn');
                     skipBtn.className = rowState.skipped ? 'fd-skipped-btn' : '';
                     if (rowState.skipped) {
                         rowEl.addClass('fd-row-dimmed');

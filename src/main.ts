@@ -2,6 +2,7 @@
 import { FileDescriberSettings, FileDescriberSettingTab, DEFAULT_SETTINGS } from './settings';
 import { NoteCreator } from './note-creator';
 import { UndescribedFilesModal, UndescribedFile } from './describe-modal';
+import { t, tpl } from './i18n';
 
 function processFrontMatterSafe(noteFile: TFile, app: App, callback: (fm: Record<string, unknown>) => void): Promise<void> {
     return app.fileManager.processFrontMatter(noteFile, callback as (fm: unknown) => void);
@@ -22,13 +23,13 @@ export default class FileDescriberPlugin extends Plugin {
 
         this.addCommand({
             id: 'show-undescribed-files',
-            name: 'Show undescribed files',
+            name: t('command.show-undescribed'),
             callback: () => {
                 void this.showUndescribedFiles();
             },
         });
 
-        const ribbonIcon = this.addRibbonIcon('file-text', 'File Describer', () => {
+        const ribbonIcon = this.addRibbonIcon('file-text', t('ribbon.tooltip'), () => {
             void this.showUndescribedFiles();
         });
         ribbonIcon.addClass('fd-ribbon-relative');
@@ -104,7 +105,7 @@ export default class FileDescriberPlugin extends Plugin {
         const timePart = this.settings.timeFormat ? ' ' + now.format(this.settings.timeFormat) : '';
 
         await processFrontMatterSafe(noteFile, this.app, (fm) => {
-            fm['Status'] = `файл ${file.name} - удален ${datePart}${timePart}`;
+            fm['Status'] = tpl('status.deleted', { name: file.name, date: datePart, time: timePart });
             fm['File'] = '';
         });
     }
@@ -144,7 +145,7 @@ export default class FileDescriberPlugin extends Plugin {
         for (const file of files) {
             const exists = await this.noteCreator.noteExists(targetFolder, this.settings.notesSubfolder, file.name);
             if (!exists) {
-                undescribed.push({ file, type: 'new', reason: 'No description note' });
+                undescribed.push({ file, type: 'new', reason: t('reason.no-description') });
             }
         }
 
@@ -182,7 +183,7 @@ export default class FileDescriberPlugin extends Plugin {
                         missingFileName: linkedFilename,
                         existingDescription: (fm['File Description'] as string) || '',
                         existingTags: tags,
-                        reason: 'Original file deleted',
+                        reason: t('reason.file-deleted'),
                     });
                 } else {
                     if (fm['Status']) {
@@ -243,7 +244,7 @@ export default class FileDescriberPlugin extends Plugin {
             fm['File'] = `[[${relPath}]]`;
         });
 
-        new Notice(`File link updated for ${relPath}`);
+        new Notice(tpl('notice.link-updated', { path: relPath }));
     }
 
     openUndescribedTable(undescribed: UndescribedFile[]): void {
@@ -270,7 +271,7 @@ export default class FileDescriberPlugin extends Plugin {
         const all = await this.scanForUndescribed();
 
         if (all.length === 0) {
-            new Notice('All files have descriptions');
+            new Notice(t('notice.all-described'));
             return;
         }
 
