@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="README.md">English</a> |
-  <a href="README.ru.md">Русский</a>
+  <a href="https://github.com/Alexandrovdi/File-Describer/blob/main/README.md">English</a> |
+  <a href="https://github.com/Alexandrovdi/File-Describer/blob/main/docs/README.ru.md">Русский</a>
 </p>
 
 # File Describer
@@ -18,7 +18,7 @@
 
 
 <p align="center">
-  <img src="https://github.com/Alexandrovdi/File-Describer/blob/docs/File describer settings.jpg" alt="File Describer settings" width="900">
+  <img src="https://github.com/Alexandrovdi/File-Describer/blob/main/docs/File describer settings.jpg" alt="File Describer settings" width="900">
 </p>
 
 ## Настройки
@@ -35,11 +35,11 @@
 2. Плагин создаёт заметку-описание в папке (Notes subfolder) с frontmatter: `File Description`, `File` (викиссылка), `date_added`, `filetype`, `filename`
 3. При добавлении, удалении или перемещении файла над иконкой плагина появится красный `!`
    <p align="center">
-  <img src="https://github.com/Alexandrovdi/File-Describer/blob/docs/File describer icon.jpg" alt="File Describer Ribbon indicator" width="900">
+  <img src="https://github.com/Alexandrovdi/File-Describer/blob/main/docs/File describer icon.jpg" alt="File Describer Ribbon indicator" width="45">
 </p>
 4. При открытии плагина на вкладках будет отображено необходимое действие 
    <p align="center">
-  <img src="https://github.com/Alexandrovdi/File-Describer/blob/docs/File describer plugin window.jpg" alt="File Describer plugin window" width="900">
+  <img src="https://github.com/Alexandrovdi/File-Describer/blob/main/docs/File describer plugin window.jpg" alt="File Describer plugin window" width="900">
 </p>
 5. Заполните поля "Description" и "Tags", нажмите "Save"
 
