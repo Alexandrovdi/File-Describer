@@ -48,6 +48,7 @@ Also for your convenience, you can download a ready-made [base file](https://git
 </p>
 5. Fill in the "Description" and "Tags" fields, click "Save"
 
+
 **ATTENTION!**
 When you delete a description file from the folder (Notes subfolder), the system will prompt you to delete the file. You can choose to agree or not. If you do not agree, the plugin will prompt you to update the description for the file.
 
