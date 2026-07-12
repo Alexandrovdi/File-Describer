@@ -210,11 +210,9 @@ export default class FileDescriberPlugin extends Plugin {
             this.badgeEl.setText('!');
             this.badgeEl.removeClass('fd-badge-hidden');
             this.badgeEl.addClass('fd-badge-visible');
-            this.badgeEl.style.display = 'flex';
         } else {
             this.badgeEl.removeClass('fd-badge-visible');
             this.badgeEl.addClass('fd-badge-hidden');
-            this.badgeEl.style.display = 'none';
         }
     }
 

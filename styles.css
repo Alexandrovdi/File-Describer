@@ -87,14 +87,6 @@
     position: relative;
 }
 
-.fd-badge-visible {
-    display: flex;
-}
-
-.fd-badge-hidden {
-    display: none;
-}
-
 .ribbon-badge {
     position: absolute;
     top: 1px;
@@ -106,7 +98,6 @@
     min-width: 14px;
     height: 14px;
     border-radius: 50%;
-    display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 3px;
@@ -114,6 +105,14 @@
     box-sizing: border-box;
     line-height: 1;
     z-index: 10;
+}
+
+.ribbon-badge.fd-badge-visible {
+    display: flex;
+}
+
+.ribbon-badge.fd-badge-hidden {
+    display: none;
 }
 
 .fd-tabs {

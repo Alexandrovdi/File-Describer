@@ -1,6 +1,6 @@
 {
   "name": "file-describer",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Obsidian plugin to create description notes for files",
   "main": "main.js",
   "scripts": {
