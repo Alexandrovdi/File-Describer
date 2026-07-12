@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.md">English</a> |
+  <a href="https://github.com/Alexandrovdi/File-Describer/blob/main/README.md">English</a> |
   <a href="https://github.com/Alexandrovdi/File-Describer/blob/main/docs/README.ru.md">Русский</a>
 </p>
 
@@ -35,13 +35,13 @@ An Obsidian plugin that automatically creates and manages description notes for 
 2. The plugin creates a description note in the notes subfolder with frontmatter: `File Description`, `File` (wikilink), `date_added`, `filetype`, `filename`
 3. When a file is added, deleted, or moved, a red `!` appears on the plugin icon
    <p align="center">
-  <img src="https://github.com/Alexandrovdi/File-Describer/blob/main/docs/File describer icon.jpg" alt="File Describer Ribbon indicator" width="900">
+  <img src="https://github.com/Alexandrovdi/File-Describer/blob/main/docs/File describer icon.jpg" alt="File Describer Ribbon indicator" width="45">
 </p>
-1. When you open the plugin, the required action is shown in the tabs
+4. When you open the plugin, the required action is shown in the tabs
    <p align="center">
   <img src="https://github.com/Alexandrovdi/File-Describer/blob/main/docs/File describer plugin window.jpg" alt="File Describer plugin window" width="900">
 </p>
-1. Fill in the "Description" and "Tags" fields, click "Save"
+5. Fill in the "Description" and "Tags" fields, click "Save"
 
 ## Installation
 
