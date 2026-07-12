@@ -88,12 +88,9 @@ export default class FileDescriberPlugin extends Plugin {
     }
 
     async markNoteAsDeleted(file: TFile): Promise<void> {
-        const noteName = this.noteCreator.getNoteName(file.name);
-        const noteFolderPath = this.noteCreator.getNoteFolderPath(
-            this.settings.targetFolder, this.settings.notesSubfolder,
+        const noteFile = await this.noteCreator.findNoteFile(
+            this.settings.targetFolder, this.settings.notesSubfolder, file,
         );
-        const notePath = normalizePath(`${noteFolderPath}/${noteName}.md`);
-        const noteFile = this.app.vault.getAbstractFileByPath(notePath);
         if (!(noteFile instanceof TFile)) return;
 
         const cache = this.app.metadataCache.getFileCache(noteFile);
@@ -143,7 +140,7 @@ export default class FileDescriberPlugin extends Plugin {
 
         const undescribed: UndescribedFile[] = [];
         for (const file of files) {
-            const exists = await this.noteCreator.noteExists(targetFolder, this.settings.notesSubfolder, file.name);
+            const exists = await this.noteCreator.noteExists(targetFolder, this.settings.notesSubfolder, file);
             if (!exists) {
                 undescribed.push({ file, type: 'new', reason: t('reason.no-description') });
             }
@@ -213,36 +210,61 @@ export default class FileDescriberPlugin extends Plugin {
             this.badgeEl.setText('!');
             this.badgeEl.removeClass('fd-badge-hidden');
             this.badgeEl.addClass('fd-badge-visible');
+            this.badgeEl.style.display = 'flex';
         } else {
             this.badgeEl.removeClass('fd-badge-visible');
             this.badgeEl.addClass('fd-badge-hidden');
+            this.badgeEl.style.display = 'none';
         }
     }
 
     async updateFileLink(file: TFile, oldPath: string): Promise<void> {
         const oldFileName = oldPath.split('/').pop() || file.name;
-        const noteName = this.noteCreator.getNoteName(oldFileName);
         const noteFolderPath = this.noteCreator.getNoteFolderPath(
             this.settings.targetFolder, this.settings.notesSubfolder,
         );
-        const notePath = normalizePath(`${noteFolderPath}/${noteName}.md`);
-        const noteFile = this.app.vault.getAbstractFileByPath(notePath);
+
+        const oldKey = this.noteCreator.getNoteKeyFromPath(oldPath, oldFileName, this.settings.targetFolder);
+        let notePath = normalizePath(`${noteFolderPath}/${oldKey}.md`);
+        let noteFile = this.app.vault.getAbstractFileByPath(notePath);
+        if (!(noteFile instanceof TFile)) {
+            const simpleName = this.noteCreator.getNoteName(oldFileName);
+            if (oldKey !== simpleName) {
+                notePath = normalizePath(`${noteFolderPath}/${simpleName}.md`);
+                noteFile = this.app.vault.getAbstractFileByPath(notePath);
+            }
+        }
         if (!(noteFile instanceof TFile)) return;
 
         const cache = this.app.metadataCache.getFileCache(noteFile);
         if (!cache?.frontmatter) return;
         if (cache.frontmatter['Status']) return;
 
-        const relPath = file.path.startsWith(this.settings.targetFolder + '/')
-            ? file.path.slice(this.settings.targetFolder.length + 1)
+        const folderPrefix = this.settings.targetFolder.replace(/\/+$/, '') + '/';
+        const relPath = file.path.startsWith(folderPrefix)
+            ? file.path.slice(folderPrefix.length)
             : file.name;
 
-        await processFrontMatterSafe(noteFile, this.app, (fm) => {
-            if (oldFileName !== file.name) {
-                fm['filename'] = file.name;
+        const content = await this.app.vault.read(noteFile);
+        const newFilename = oldFileName !== file.name ? file.name : null;
+        let updated;
+        if (newFilename) {
+            updated = content
+                .replace(/^File:.*$/m, `File: "[[${relPath}]]"`)
+                .replace(/^filename:.*$/m, `filename: ${newFilename}`);
+        } else {
+            updated = content.replace(/^File:.*$/m, `File: "[[${relPath}]]"`);
+        }
+        await this.app.vault.modify(noteFile, updated);
+
+        const newKey = this.noteCreator.getNoteKey(file, this.settings.targetFolder);
+        if (newKey !== oldKey) {
+            const newNotePath = normalizePath(`${noteFolderPath}/${newKey}.md`);
+            const existingNote = this.app.vault.getAbstractFileByPath(newNotePath);
+            if (!existingNote) {
+                await this.app.vault.rename(noteFile, newNotePath);
             }
-            fm['File'] = `[[${relPath}]]`;
-        });
+        }
 
         new Notice(tpl('notice.link-updated', { path: relPath }));
     }
@@ -269,6 +291,7 @@ export default class FileDescriberPlugin extends Plugin {
 
     async showUndescribedFiles(): Promise<void> {
         const all = await this.scanForUndescribed();
+        this.updateBadge(all.length);
 
         if (all.length === 0) {
             new Notice(t('notice.all-described'));

@@ -6,6 +6,11 @@
 # File Describer
 
 An Obsidian plugin that automatically creates and manages description notes for files in a watched folder. Perfect for organizing files in your vault with searchable descriptions, tracking file changes, and managing metadata.
+Also for your convenience, you can download a ready-made [base file](https://github.com/Alexandrovdi/File-Describer/blob/main/docs/FileDB.base) which will display a full list of files with descriptions. Using the search, you can quickly find the file you need.
+
+<p align="center">
+  <img src="https://github.com/Alexandrovdi/File-Describer/blob/main/docs/FileDB.gif" alt="File Describer" width="900">
+</p>
 
 ## Features
 
@@ -42,6 +47,11 @@ An Obsidian plugin that automatically creates and manages description notes for 
   <img src="https://github.com/Alexandrovdi/File-Describer/blob/main/docs/File describer plugin window.jpg" alt="File Describer plugin window" width="900">
 </p>
 5. Fill in the "Description" and "Tags" fields, click "Save"
+
+**ATTENTION!**
+When you delete a description file from the folder (Notes subfolder), the system will prompt you to delete the file. You can choose to agree or not. If you do not agree, the plugin will prompt you to update the description for the file.
+
+
 
 ## Installation
 

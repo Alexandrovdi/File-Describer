@@ -1,0 +1,20 @@
+views:
+  - type: table
+    name: Table
+    filters:
+      and:
+        - file.hasProperty("File")
+    order:
+      - File
+      - File Description
+      - date_added
+      - tags
+      - Status
+    sort:
+      - property: File Description
+        direction: ASC
+    columnSize:
+      note.File: 368
+      note.File Description: 301
+      note.tags: 117
+      note.Status: 305

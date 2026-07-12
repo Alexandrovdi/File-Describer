@@ -1,4 +1,4 @@
-﻿import { App, TFile, normalizePath } from 'obsidian';
+﻿import { App, Notice, TFile, TFolder, normalizePath } from 'obsidian';
 
 export interface FileMetadata {
     filename: string;
@@ -37,20 +37,61 @@ export class NoteCreator {
         return fileName;
     }
 
-    async noteExists(targetFolder: string, notesSubfolder: string, fileName: string): Promise<boolean> {
+    getNoteKeyFromPath(filePath: string, fileName: string, targetFolder: string): string {
+        const prefix = targetFolder.replace(/\/+$/, '') + '/';
+        const relPath = filePath.startsWith(prefix)
+            ? filePath.slice(prefix.length)
+            : fileName;
+        const dotIndex = relPath.lastIndexOf('.');
+        const nameWithoutExt = dotIndex > 0 ? relPath.substring(0, dotIndex) : relPath;
+        return nameWithoutExt.replace(/\//g, '_');
+    }
+
+    getNoteKey(file: TFile, targetFolder: string): string {
+        return this.getNoteKeyFromPath(file.path, file.name, targetFolder);
+    }
+
+    getNotePath(targetFolder: string, notesSubfolder: string, noteKey: string): string {
         const noteFolder = this.getNoteFolderPath(targetFolder, notesSubfolder);
-        const noteName = this.getNoteName(fileName);
-        const notePath = normalizePath(`${noteFolder}/${noteName}.md`);
-        const exists = this.app.vault.getAbstractFileByPath(notePath);
-        return !!exists;
+        return normalizePath(`${noteFolder}/${noteKey}.md`);
+    }
+
+    async noteExists(targetFolder: string, notesSubfolder: string, file: TFile): Promise<boolean> {
+        const noteFolder = this.getNoteFolderPath(targetFolder, notesSubfolder);
+
+        const key = this.getNoteKey(file, targetFolder);
+        if (this.app.vault.getAbstractFileByPath(normalizePath(`${noteFolder}/${key}.md`))) return true;
+
+        const simple = this.getNoteName(file.name);
+        if (key !== simple && this.app.vault.getAbstractFileByPath(normalizePath(`${noteFolder}/${simple}.md`))) return true;
+
+        return false;
+    }
+
+    async findNoteFile(targetFolder: string, notesSubfolder: string, file: TFile): Promise<TFile | null> {
+        const noteFolder = this.getNoteFolderPath(targetFolder, notesSubfolder);
+
+        const key = this.getNoteKey(file, targetFolder);
+        const notePath = normalizePath(`${noteFolder}/${key}.md`);
+        let noteFile = this.app.vault.getAbstractFileByPath(notePath);
+        if (noteFile instanceof TFile) return noteFile;
+
+        const simple = this.getNoteName(file.name);
+        if (key !== simple) {
+            const simplePath = normalizePath(`${noteFolder}/${simple}.md`);
+            noteFile = this.app.vault.getAbstractFileByPath(simplePath);
+            if (noteFile instanceof TFile) return noteFile;
+        }
+
+        return null;
     }
 
     async createNote(targetFolder: string, notesSubfolder: string, file: TFile, metadata: FileMetadata): Promise<void> {
         const noteFolder = this.getNoteFolderPath(targetFolder, notesSubfolder);
         await this.ensureFolder(noteFolder);
 
-        const noteName = this.getNoteName(file.name);
-        const notePath = normalizePath(`${noteFolder}/${noteName}.md`);
+        const noteKey = this.getNoteKey(file, targetFolder);
+        const notePath = normalizePath(`${noteFolder}/${noteKey}.md`);
 
         const tagsStr = metadata.tags.length > 0
             ? `  - ${metadata.tags.join('\n  - ')}`
@@ -58,8 +99,9 @@ export class NoteCreator {
 
         const descEscaped = metadata.description.replace(/"/g, '\\"');
 
-        const fileRelPath = file.path.startsWith(targetFolder + '/')
-            ? file.path.slice(targetFolder.length + 1)
+        const folderPrefix = targetFolder.replace(/\/+$/, '') + '/';
+        const fileRelPath = file.path.startsWith(folderPrefix)
+            ? file.path.slice(folderPrefix.length)
             : file.name;
 
         const content = [
@@ -74,6 +116,11 @@ export class NoteCreator {
             '---',
         ].join('\n');
 
+        const existing = this.app.vault.getAbstractFileByPath(notePath);
+        if (existing instanceof TFile) {
+            new Notice(`Note already exists for ${file.name}`);
+            return;
+        }
         await this.app.vault.create(notePath, content);
     }
 }
